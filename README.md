@@ -150,3 +150,12 @@ Where present, successful RDP authentication events were reviewed to determine w
 
 The investigation confirmed a brute-force authentication attempt against a Windows Server 2022 system. Detection was achieved through Log Analytics KQL queries and validated using native Windows Security Event Logs.
 
+
+---
+
+## Architecture Diagram
+
+The following diagram represents the full SOC lab architecture, including attack flow, log ingestion, and SIEM analysis.
+
+![SOC Architecture](architecture/soc-architecture.png)
+
