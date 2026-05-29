@@ -1,0 +1,17 @@
+digraph SOC {
+
+rankdir=LR;
+
+Windows11 [label="Windows 11 (Attacker / Admin)"];
+WindowsServer [label="Windows Server 2022 (RDP Target)"];
+Logs [label="Log Analytics Workspace"];
+Sentinel [label="Microsoft Sentinel"];
+
+Windows11 -> WindowsServer [label="RDP brute-force attempts"];
+
+WindowsServer -> Logs [label="Security Event Logs\n4624 / 4625 / 4688"];
+
+Logs -> Sentinel [label="Telemetry ingestion"];
+
+Sentinel -> Windows11 [label="Alerts & Incident detection"];
+}
