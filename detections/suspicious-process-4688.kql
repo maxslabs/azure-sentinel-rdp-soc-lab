@@ -1,0 +1,5 @@
+SecurityEvent
+| where EventID == 4688
+| where Process has_any ("cmd.exe", "powershell.exe", "psexec", "net user")
+| summarize count() by Account, Computer, Process, bin(TimeGenerated, 5m)
+| order by count_ desc

@@ -1,0 +1,17 @@
+let failed =
+SecurityEvent
+| where EventID == 4625
+| where LogonType == 10
+| summarize FailedCount = count() by IpAddress, Account, bin(TimeGenerated, 10m);
+
+let success =
+SecurityEvent
+| where EventID == 4624
+| where LogonType == 10
+| project IpAddress, Account, SuccessTime = TimeGenerated;
+
+failed
+| join kind=inner success on IpAddress, Account
+| where SuccessTime > TimeGenerated
+| project IpAddress, Account, FailedCount, SuccessTime
+| order by FailedCount desc

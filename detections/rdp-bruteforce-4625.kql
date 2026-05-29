@@ -1,0 +1,6 @@
+SecurityEvent
+| where EventID == 4625
+| where LogonType == 10
+| summarize FailedAttempts = count() by IpAddress, bin(TimeGenerated, 5m)
+| where FailedAttempts >= 5
+| order by FailedAttempts desc

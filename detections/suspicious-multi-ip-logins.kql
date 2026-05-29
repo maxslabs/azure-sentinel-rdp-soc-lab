@@ -1,0 +1,6 @@
+SecurityEvent
+| where EventID == 4625
+| where LogonType == 10
+| summarize DistinctTargets = dcount(Account) by IpAddress, bin(TimeGenerated, 10m)
+| where DistinctTargets >= 3
+| order by DistinctTargets desc
