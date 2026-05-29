@@ -96,3 +96,57 @@ setup-notes/         -> Environment configuration notes
 This environment is fully isolated and used strictly for cybersecurity learning and SOC simulation purposes.
 
 All attacks are simulated and controlled.
+
+---
+
+## SOC Investigation Flow
+
+This section documents the end-to-end investigation of a simulated RDP brute-force attack using Windows Event Logs and Log Analytics.
+
+---
+
+### 1. Detection Phase (Log Analytics – KQL Query)
+
+Initial detection was triggered by analyzing repeated failed authentication attempts (Event ID 4625) against the target system.
+
+![Brute Force Detection Results](evidence/log-analytics-rdp-4625-bruteforce-results.png)
+
+---
+
+### 2. Attack Pattern Analysis (Time-Based Spike)
+
+Authentication failures were grouped into time bins to identify abnormal spikes consistent with brute-force behavior.
+
+![Authentication Spike Over Time](evidence/log-analytics-4625-timeseries.png)
+
+---
+
+### 3. Host-Level Validation (Windows Event Logs)
+
+Windows Security logs confirmed repeated failed RDP logon attempts (Event ID 4625, Logon Type 10).
+
+![Windows Event Viewer Failed Logons](evidence/windows-eventviewer-4625-failed-logons.png)
+
+---
+
+### 4. Successful Authentication Verification (If Applicable)
+
+Where present, successful RDP authentication events were reviewed to determine whether any brute-force attempts resulted in access.
+
+![Windows Event Viewer Successful Logon](evidence/windows-eventviewer-4624-successful-logon.png)
+
+---
+
+## Summary of Findings
+
+- Multiple failed RDP authentication attempts detected (4625)
+- Activity consistent with brute-force attack pattern
+- No evidence of unauthorized persistence observed in this simulation
+- Logs successfully correlated between SIEM and endpoint
+
+---
+
+## SOC Conclusion
+
+The investigation confirmed a brute-force authentication attempt against a Windows Server 2022 system. Detection was achieved through Log Analytics KQL queries and validated using native Windows Security Event Logs.
+
