@@ -2,160 +2,89 @@
 
 ## Overview
 
-This project is a Security Operations Center (SOC) lab simulating detection and investigation of Remote Desktop Protocol (RDP) brute-force attacks in a Windows environment.
+This project simulates a Security Operations Center (SOC) investigation of a Remote Desktop Protocol (RDP) brute-force attack using Microsoft Sentinel.
 
-The goal is to demonstrate real-world SOC workflows including log ingestion, detection engineering, and incident investigation using Microsoft Sentinel.
-
----
-
-## Environment
-
-- Windows Server 2022 (target system with RDP enabled)
-- Windows 11 (attacker / admin workstation)
-- Microsoft Azure Sentinel (SIEM platform)
-- Log Analytics Workspace (log ingestion layer)
+It demonstrates end-to-end SOC workflows including telemetry ingestion, detection engineering, and incident investigation using Windows Event Logs and KQL queries.
 
 ---
 
 ## Architecture
 
-The lab simulates an enterprise RDP attack surface:
+The lab simulates an enterprise attack scenario:
 
-- Windows 11 generates authentication attempts against Windows Server 2022
-- Windows Server logs all authentication activity via Windows Security Event Logs
+- Windows 11 generates RDP authentication attempts
+- Windows Server 2022 logs authentication events (Security Logs)
 - Logs are forwarded to Azure Log Analytics
-- Microsoft Sentinel detects suspicious patterns and generates incidents
+- Microsoft Sentinel analyzes telemetry and triggers detections
+
+![SOC Architecture](architecture/soc-architecture.png)
 
 ---
 
 ## Data Sources
 
 ### Windows Server 2022
-- Security Event Logs
-- Event ID 4624 (Successful logon)
-- Event ID 4625 (Failed logon)
-- Event ID 4688 (Process creation)
-
-### Windows 11
-- RDP connection attempts
-- Authentication activity during attack simulation
+- Event ID 4624 → Successful logon
+- Event ID 4625 → Failed logon attempts
+- Event ID 4688 → Process creation
 
 ---
 
-## Detection Use Cases
+## Detection Engineering (KQL)
 
-- RDP brute-force detection (multiple 4625 failures in short time)
-- Suspicious successful login after repeated failures
-- Unusual authentication patterns from single source IP
-- Process-based suspicious activity (4688 correlation)
+The following detection use cases were implemented in Microsoft Sentinel:
+
+- Multiple failed RDP authentication attempts (4625 spike)
+- Suspicious login success following repeated failures
+- Unusual authentication patterns from single source
+- Process-level anomaly correlation (4688)
+
+KQL queries are located in the `detections/` directory.
 
 ---
 
 ## Investigation Workflow
 
-1. Attacker simulation initiated from Windows 11 machine
-2. RDP authentication attempts generated against Windows Server 2022
-3. Security logs collected on Windows Server
-4. Logs forwarded to Log Analytics Workspace
-5. Microsoft Sentinel analyzes telemetry and triggers alerts
-6. SOC analyst investigates incident timeline and root cause
+1. RDP brute-force simulation initiated from Windows 11
+2. Failed authentication attempts generated on Windows Server 2022
+3. Security logs collected and forwarded to Log Analytics Workspace
+4. Microsoft Sentinel processes telemetry using KQL rules
+5. Alerts generated for abnormal authentication patterns
+6. SOC investigation performed using event correlation and timeline analysis
 
 ---
 
-## SIEM Platform
+## Evidence
 
-This lab uses:
+All supporting artifacts are stored in the `evidence/` directory, including:
 
-Microsoft Sentinel (SIEM)  
-A cloud-native security information and event management solution used for threat detection, investigation, and response.
-
----
-
-## Repository Structure
-
-architecture/        -> Architecture diagrams  
-detections/          -> KQL detection queries  
-incident-reports/    -> SOC investigation reports  
-evidence/            -> Screenshots and log exports  
-setup-notes/         -> Environment configuration notes  
+- Log Analytics query outputs
+- Windows Event Viewer logs
+- Authentication failure spikes
+- Successful and failed RDP sessions
 
 ---
 
 ## Key Skills Demonstrated
 
 - SIEM operations using Microsoft Sentinel
+- KQL-based detection engineering
 - Windows Event Log analysis
-- Detection engineering using KQL
 - RDP attack simulation and analysis
-- SOC incident investigation workflow
+- SOC incident investigation workflows
+
+---
+
+## SOC Summary
+
+The investigation identified a brute-force authentication attempt against a Windows Server 2022 system. Detection was successfully performed using Microsoft Sentinel with Windows Event Log telemetry.
+
+No persistence or lateral movement was observed in this simulation.
 
 ---
 
 ## Notes
 
-This environment is fully isolated and used strictly for cybersecurity learning and SOC simulation purposes.
+This environment is fully isolated and used strictly for cybersecurity learning and SOC simulation.
 
-All attacks are simulated and controlled.
-
----
-
-## SOC Investigation Flow
-
-This section documents the end-to-end investigation of a simulated RDP brute-force attack using Windows Event Logs and Log Analytics.
-
----
-
-### 1. Detection Phase (Log Analytics – KQL Query)
-
-Initial detection was triggered by analyzing repeated failed authentication attempts (Event ID 4625) against the target system.
-
-![Brute Force Detection Results](evidence/log-analytics-rdp-4625-bruteforce-results.png)
-
----
-
-### 2. Attack Pattern Analysis (Time-Based Spike)
-
-Authentication failures were grouped into time bins to identify abnormal spikes consistent with brute-force behavior.
-
-![Authentication Spike Over Time](evidence/log-analytics-4625-timeseries.png)
-
----
-
-### 3. Host-Level Validation (Windows Event Logs)
-
-Windows Security logs confirmed repeated failed RDP logon attempts (Event ID 4625, Logon Type 10).
-
-![Windows Event Viewer Failed Logons](evidence/windows-eventviewer-4625-failed-logons.png)
-
----
-
-### 4. Successful Authentication Verification (If Applicable)
-
-Where present, successful RDP authentication events were reviewed to determine whether any brute-force attempts resulted in access.
-
-![Windows Event Viewer Successful Logon](evidence/windows-eventviewer-4624-successful-logon.png)
-
----
-
-## Summary of Findings
-
-- Multiple failed RDP authentication attempts detected (4625)
-- Activity consistent with brute-force attack pattern
-- No evidence of unauthorized persistence observed in this simulation
-- Logs successfully correlated between SIEM and endpoint
-
----
-
-## SOC Conclusion
-
-The investigation confirmed a brute-force authentication attempt against a Windows Server 2022 system. Detection was achieved through Log Analytics KQL queries and validated using native Windows Security Event Logs.
-
-
----
-
-## Architecture Diagram
-
-The following diagram represents the full SOC lab architecture, including attack flow, log ingestion, and SIEM analysis.
-
-![SOC Architecture](architecture/soc-architecture.png)
-
+All attack activity is simulated and controlled.
